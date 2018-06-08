@@ -1,16 +1,16 @@
 create or replace procedure U_RPT_AVLBL_LEADS_SC1
   (
    ic_e_mail         in varchar2 default nvl(crm_user.f_crm_employee_email,'lv-soina@rsb.ru'),
-   in_trace          in number   default 0,                                         --признак трассировки 0/1
-   in_stop_procedure in number   default 0                                          --не смотреть признак остановки процедуры
+   in_trace          in number   default 0,                                         --ГЇГ°ГЁГ§Г­Г ГЄ ГІГ°Г Г±Г±ГЁГ°Г®ГўГЄГЁ 0/1
+   in_stop_procedure in number   default 0                                          --Г­ГҐ Г±Г¬Г®ГІГ°ГҐГІГј ГЇГ°ГЁГ§Г­Г ГЄ Г®Г±ГІГ Г­Г®ГўГЄГЁ ГЇГ°Г®Г¶ГҐГ¤ГіГ°Г»
   ) authid current_user as
 
-  lc_process varchar2(100) := 'U_RPT_AVLBL_LEADS_SC1';        --Наименование процесса для лога
-  lc_sql     varchar2(20000);                                      --Текст SQL запрос
-  ln_step    number := 0;                                          --Номер шага
-  ln_lastId  number;                                               --Ссылка в лог на текущий процесс
-  lc_error   varchar2(1000);                                       --Текст ошибки
-  --Временные таблицы
+  lc_process varchar2(100) := 'U_RPT_AVLBL_LEADS_SC1';        --ГЌГ ГЁГ¬ГҐГ­Г®ГўГ Г­ГЁГҐ ГЇГ°Г®Г¶ГҐГ±Г±Г  Г¤Г«Гї Г«Г®ГЈГ 
+  lc_sql     varchar2(20000);                                      --Г’ГҐГЄГ±ГІ SQL Г§Г ГЇГ°Г®Г±
+  ln_step    number := 0;                                          --ГЌГ®Г¬ГҐГ° ГёГ ГЈГ 
+  ln_lastId  number;                                               --Г‘Г±Г»Г«ГЄГ  Гў Г«Г®ГЈ Г­Г  ГІГҐГЄГіГ№ГЁГ© ГЇГ°Г®Г¶ГҐГ±Г±
+  lc_error   varchar2(1000);                                       --Г’ГҐГЄГ±ГІ Г®ГёГЁГЎГЄГЁ
+  --Г‚Г°ГҐГ¬ГҐГ­Г­Г»ГҐ ГІГ ГЎГ«ГЁГ¶Г»
 TMP_SLV_ProbDistr1         varchar2(30) := crm_user.f_sys_tmp_table(ic_process => lc_process);
 TMP_SLV_ProbDistr4         varchar2(30) := crm_user.f_sys_tmp_table(ic_process => lc_process);
 TMP_SLV_ProbDistr5         varchar2(30) := crm_user.f_sys_tmp_table(ic_process => lc_process);
@@ -22,16 +22,16 @@ TMP_SLV_ProbDistr12         varchar2(30) := crm_user.f_sys_tmp_table(ic_process 
 ---TMP_SLV_ProbDistr1 varchar2(30):= 'TMPNAme';
 begin
 
-  --проверка на отсутствие флажка, что не нужно запускать процедуру
+  --ГЇГ°Г®ГўГҐГ°ГЄГ  Г­Г  Г®ГІГ±ГіГІГ±ГІГўГЁГҐ ГґГ«Г Г¦ГЄГ , Г·ГІГ® Г­ГҐ Г­ГіГ¦Г­Г® Г§Г ГЇГіГ±ГЄГ ГІГј ГЇГ°Г®Г¶ГҐГ¤ГіГ°Гі
   if 1 != f_check_start_job(ic_process => lc_process,in_stop_procedure => in_stop_procedure,ic_e_mail => ic_e_mail,in_trace => in_trace,in_no_log => 1)
     then goto proc_error;
   end if;
 
-  --Запись в лог, что процесс запущен
+  --Г‡Г ГЇГЁГ±Гј Гў Г«Г®ГЈ, Г·ГІГ® ГЇГ°Г®Г¶ГҐГ±Г± Г§Г ГЇГіГ№ГҐГ­
   ln_step := ln_step + 1;
   ln_lastId := Insertlog(ic_process => lc_process,ic_status => 'START',ic_step => to_char(ln_step,'000'),ic_email => ic_e_mail);
 
-  --карта1
+  --ГЄГ Г°ГІГ 1
   ln_step := ln_step + 1;
   lc_sql := '
 create table '||TMP_SLV_ProbDistr1||' as
@@ -151,7 +151,7 @@ ln_step := ln_step + 1;
    ';
   sys_sql_execute(ic_process => lc_process, ic_step => to_char(ln_step, '000'), ic_sql => lc_sql, ic_e_mail => ic_e_mail, in_trace => in_trace);
 
-   --карта4
+   --ГЄГ Г°ГІГ 4
   ln_step := ln_step + 1;
   lc_sql := '
 create table '||TMP_SLV_ProbDistr4||' as
@@ -270,7 +270,7 @@ ln_step := ln_step + 1;
    select prob_dist, cnt, is_excl,is_stop,is_mob,is_vitr,is_available from '||TMP_SLV_ProbDistr4||'
    ';
   sys_sql_execute(ic_process => lc_process, ic_step => to_char(ln_step, '000'), ic_sql => lc_sql, ic_e_mail => ic_e_mail, in_trace => in_trace);
---карта 5
+--ГЄГ Г°ГІГ  5
  ln_step := ln_step + 1;
   lc_sql := '
 create table '||TMP_SLV_ProbDistr5||' as
@@ -389,7 +389,7 @@ ln_step := ln_step + 1;
    select prob_dist, cnt, is_excl,is_stop,is_mob,is_vitr,is_available from '||TMP_SLV_ProbDistr5||'
    ';
   sys_sql_execute(ic_process => lc_process, ic_step => to_char(ln_step, '000'), ic_sql => lc_sql, ic_e_mail => ic_e_mail, in_trace => in_trace);
---карта 6
+--ГЄГ Г°ГІГ  6
  ln_step := ln_step + 1;
   lc_sql := '
 create table '||TMP_SLV_ProbDistr6||' as
@@ -508,7 +508,7 @@ ln_step := ln_step + 1;
    select prob_dist, cnt, is_excl,is_stop,is_mob,is_vitr,is_available from '||TMP_SLV_ProbDistr6||'
    ';
   sys_sql_execute(ic_process => lc_process, ic_step => to_char(ln_step, '000'), ic_sql => lc_sql, ic_e_mail => ic_e_mail, in_trace => in_trace);
---карта 8
+--ГЄГ Г°ГІГ  8
  ln_step := ln_step + 1;
   lc_sql := '
 create table '||TMP_SLV_ProbDistr8||' as
@@ -627,7 +627,7 @@ ln_step := ln_step + 1;
    select prob_dist, cnt, is_excl,is_stop,is_mob,is_vitr,is_available from '||TMP_SLV_ProbDistr8||'
    ';
   sys_sql_execute(ic_process => lc_process, ic_step => to_char(ln_step, '000'), ic_sql => lc_sql, ic_e_mail => ic_e_mail, in_trace => in_trace);
---карта 7
+--ГЄГ Г°ГІГ  7
  ln_step := ln_step + 1;
   lc_sql := '
 create table '||TMP_SLV_ProbDistr7||' as
@@ -746,7 +746,7 @@ ln_step := ln_step + 1;
    select prob_dist, cnt, is_excl,is_stop,is_mob,is_vitr,is_available from '||TMP_SLV_ProbDistr7||'
    ';
   sys_sql_execute(ic_process => lc_process, ic_step => to_char(ln_step, '000'), ic_sql => lc_sql, ic_e_mail => ic_e_mail, in_trace => in_trace);
----карта 11
+---ГЄГ Г°ГІГ  11
  ln_step := ln_step + 1;
   lc_sql := '
 create table '||TMP_SLV_ProbDistr11||' as
@@ -865,7 +865,7 @@ ln_step := ln_step + 1;
    select prob_dist, cnt, is_excl,is_stop,is_mob,is_vitr,is_available from '||TMP_SLV_ProbDistr11||'
    ';
   sys_sql_execute(ic_process => lc_process, ic_step => to_char(ln_step, '000'), ic_sql => lc_sql, ic_e_mail => ic_e_mail, in_trace => in_trace);
----карта 12
+---ГЄГ Г°ГІГ  12
 
  ln_step := ln_step + 1;
   lc_sql := '
